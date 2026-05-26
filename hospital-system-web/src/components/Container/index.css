@@ -1,0 +1,9 @@
+.container{
+  max-width: 1200px;
+  margin: 0 auto;
+  margin-top: 32px;
+  padding: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}

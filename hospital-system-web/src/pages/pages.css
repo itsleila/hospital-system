@@ -1,0 +1,13 @@
+.header-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.empty-state {
+  text-align: center;
+  color: var(--text);
+  font-size: 1.1rem;
+  padding: 40px;
+}

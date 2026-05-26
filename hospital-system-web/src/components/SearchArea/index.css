@@ -1,0 +1,14 @@
+.search-button{
+  background: var(--primary);
+  color: #fff;
+  padding: 15px;
+  border-radius: 0px 12px 12px 0px;
+}
+
+.search-button:hover {
+  background: var(--primary-hover);
+}
+
+.search-input {
+  border-radius: 12px 0px 0px 12px;
+}

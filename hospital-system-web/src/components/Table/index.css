@@ -1,0 +1,16 @@
+.table-actions {
+  display: flex;
+  gap: 8px;
+}
+.edit-btn, .delete-btn{
+  background: transparent;
+  font-size: 1.2rem;
+  color: #101828;
+}
+
+.table-container {
+  margin-top: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
