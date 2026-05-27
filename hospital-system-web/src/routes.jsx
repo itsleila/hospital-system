@@ -3,6 +3,8 @@ import { AppLayout } from './layouts/AppLayout';
 import Appointments from './pages/Appointments/Appointments.jsx';
 import Doctors from './pages/Doctors/Doctors.jsx';
 import Patients from './pages/Patients/Patients.jsx';
+import PatientForm from './pages/Patients/PatientForm.jsx';
+import DoctorForm from './pages/Doctors/DoctorForm.jsx';
 export const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -13,11 +15,23 @@ export const router = createBrowserRouter([
       },
       {
         path: '/doctors',
-        element: <Doctors />,
+        children: [
+          {
+            index: true,
+            element: <Doctors />,
+          },
+          { path: 'doctor-form', element: <DoctorForm /> },
+        ],
       },
       {
         path: '/patients',
-        element: <Patients />,
+        children: [
+          {
+            index: true,
+            element: <Patients />,
+          },
+          { path: 'patient-form', element: <PatientForm /> },
+        ],
       },
     ],
   },

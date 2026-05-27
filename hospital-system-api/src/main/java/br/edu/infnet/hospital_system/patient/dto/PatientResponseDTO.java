@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -16,7 +17,7 @@ public class PatientResponseDTO {
     private String name;
     private String surname;
     private String cpf;
-    private Date birthDate;
+    private LocalDate birthdate;
     private String gender;
-    private Integer phoneNumber;
+    private String phonenumber;
 }

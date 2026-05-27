@@ -107,6 +107,20 @@ p {
   line-height: 1.7;
 }
 
+.text-error {
+  color: var(--danger);
+  padding: 2px;
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+.text-success {
+  color: var(--success);
+  padding: 2px;
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
 /* LINKS */
 
 a {
@@ -146,9 +160,33 @@ button:active {
     color 0.1s ease;
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-primary:focus, .btn-secondary:hover, .btn-secondary:focus {
   background: var(--primary-hover);}
 
+.btn-secondary{
+  background: var(--secondary);
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--surface);
+  border: 1px solid var(--border);
+  font-weight: 600;
+}
+
+.btn-danger {
+  background: var(--danger);
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--surface);
+  font-weight: 600;
+}
+
+.btn-success {
+  background: var(--success);
+  padding: 8px 16px;
+  border-radius: 8px;
+  color: var(--surface);
+  font-weight: 600;
+}
 
 /* INPUTS */
 

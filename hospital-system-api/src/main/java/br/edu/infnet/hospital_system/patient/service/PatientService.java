@@ -22,9 +22,9 @@ public class PatientService {
         patient.setName(patientRequestDTO.getName());
         patient.setSurname(patientRequestDTO.getSurname());
         patient.setCpf(patientRequestDTO.getCpf());
-        patient.setBirthDate(patientRequestDTO.getBirthDate());
+        patient.setBirthdate(patientRequestDTO.getBirthdate());
         patient.setGender(patientRequestDTO.getGender());
-        patient.setPhoneNumber(patientRequestDTO.getPhoneNumber());
+        patient.setPhonenumber(patientRequestDTO.getPhonenumber());
 
         return patient;
     }
@@ -35,9 +35,9 @@ public class PatientService {
         dto.setName(patient.getName());
         dto.setSurname(patient.getSurname());
         dto.setCpf(patient.getCpf());
-        dto.setBirthDate(patient.getBirthDate());
+        dto.setBirthdate(patient.getBirthdate());
         dto.setGender(patient.getGender());
-        dto.setPhoneNumber(patient.getPhoneNumber());
+        dto.setPhonenumber(patient.getPhonenumber());
 
         return dto;
     }
@@ -84,9 +84,9 @@ public class PatientService {
         patient.setId(id);
         patient.setName(patientRequestDTO.getName());
         patient.setSurname(patientRequestDTO.getSurname());
-        patient.setBirthDate(patientRequestDTO.getBirthDate());
+        patient.setBirthdate(patientRequestDTO.getBirthdate());
         patient.setGender(patientRequestDTO.getGender());
-        patient.setPhoneNumber(patientRequestDTO.getPhoneNumber());
+        patient.setPhonenumber(patientRequestDTO.getPhonenumber());
         return toDTO(patient);
     }
 
