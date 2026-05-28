@@ -47,7 +47,7 @@ const Doctors = () => {
     },
     {
       name: 'CRM',
-      selector: (row) => row.crm,
+      selector: (row) => row.CRM,
     },
     {
       name: 'Specialty',

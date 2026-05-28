@@ -17,7 +17,6 @@ public class Appointment {
     private Long id;
     private LocalDateTime dateTime;
     private AppointmentStatus status;
-
     private Doctor doctor;
     private Patient patient;
 }

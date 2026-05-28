@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class DoctorService {
-    private final List<Doctor> doctorList = new ArrayList<>();
+    private static final List<Doctor> doctorList = new ArrayList<>();
     private Long idCounter = 1L;
 
     private Doctor toEntity(DoctorResquestDTO doctorResquestDTO) {

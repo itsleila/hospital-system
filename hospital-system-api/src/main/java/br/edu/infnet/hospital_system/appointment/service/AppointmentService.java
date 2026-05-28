@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import br.edu.infnet.hospital_system.appointment.model.AppointmentStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,7 +18,7 @@ import br.edu.infnet.hospital_system.patient.service.PatientService;
 
 @Service
 public class AppointmentService {
-  private List<Appointment> appointmentList = new ArrayList<>();
+  private static final List<Appointment> appointmentList = new ArrayList<>();
   private Long idCounter = 1L;
   private final PatientService patientService;
   private final DoctorService doctorService;
@@ -32,6 +33,7 @@ public class AppointmentService {
     appointment.setId(idCounter++);
     appointment.setPatient(patientService.verifyPatientById(appointmentRequestDTO.getPatientId()));
     appointment.setDoctor(doctorService.verifyDoctorById(appointmentRequestDTO.getDoctorId()));
+    appointment.setStatus(AppointmentStatus.SCHEDULED);
     appointment.setDateTime(appointmentRequestDTO.getDateTime());
     return appointment;
   }
@@ -41,6 +43,7 @@ public class AppointmentService {
     dto.setId(appointment.getId());
     dto.setPatientName(appointment.getPatient().getName() + " " + appointment.getPatient().getSurname());
     dto.setDoctorName(appointment.getDoctor().getName() + " " + appointment.getDoctor().getSurname());
+    dto.setStatus(appointment.getStatus());
     dto.setDateTime(appointment.getDateTime());
     return dto;
   }
@@ -108,7 +111,6 @@ public class AppointmentService {
     if (doctorUnavailable && !existingAppointment.getDoctor().getId().equals(appointmentRequest.getDoctorId())) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Doctor is not available at the requested time");
     }
-    existingAppointment.setPatient(patientService.verifyPatientById(appointmentRequest.getPatientId()));
     existingAppointment.setDoctor(doctorService.verifyDoctorById(appointmentRequest.getDoctorId()));
     existingAppointment.setDateTime(appointmentRequest.getDateTime());
     return toDTO(existingAppointment);

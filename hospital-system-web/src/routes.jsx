@@ -5,6 +5,7 @@ import Doctors from './pages/Doctors/Doctors.jsx';
 import Patients from './pages/Patients/Patients.jsx';
 import PatientForm from './pages/Patients/PatientForm.jsx';
 import DoctorForm from './pages/Doctors/DoctorForm.jsx';
+import AppointmentForm from './pages/Appointments/AppointmentForm.jsx';
 export const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -21,6 +22,16 @@ export const router = createBrowserRouter([
             element: <Doctors />,
           },
           { path: 'doctor-form', element: <DoctorForm /> },
+        ],
+      },
+      {
+        path: '/appointments',
+        children: [
+          {
+            index: true,
+            element: <Appointments />,
+          },
+          { path: 'appointment-form', element: <AppointmentForm /> },
         ],
       },
       {

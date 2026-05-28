@@ -30,7 +30,7 @@ export async function getDoctorById(id) {
 
 export async function getDoctorByCRM(crm) {
   try {
-    const response = await fetch(ApiConfig(`doctors/crm/${crm}`));
+    const response = await fetch(ApiConfig(`doctors/crm?crm=${crm}`));
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to fetch doctor');

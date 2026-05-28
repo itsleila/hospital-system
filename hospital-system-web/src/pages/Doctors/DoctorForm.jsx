@@ -96,11 +96,11 @@ const DoctorForm = () => {
             <input
               type="text"
               placeholder="XXXXXX/UF"
-              {...register('crm', {
+              {...register('CRM', {
                 required: 'CRM is required',
               })}
             />
-            {errors.crm && <p className="text-error">{errors.crm.message}</p>}
+            {errors.CRM && <p className="text-error">{errors.CRM.message}</p>}
           </div>
         </div>
         <div className="form-group">

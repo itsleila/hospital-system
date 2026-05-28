@@ -14,8 +14,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AppointmentRequestDTO {
     private LocalDateTime dateTime;
-    private AppointmentStatus status;
-
     private Long doctorId;
     private Long patientId;
 }

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class PatientService {
-    private final List<Patient> patientList = new ArrayList<>();
+    private static final List<Patient> patientList = new ArrayList<>();
     private Long idCounter = 1L;
 
     private Patient toEntity(PatientRequestDTO patientRequestDTO) {

@@ -7,8 +7,8 @@ const Sidebar = () => {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <img src={Logo} alt="MediCore Logo" />
-        <span>MediCore</span>
+        <img src={Logo} alt="Union Hospital Logo" />
+        <span>Union Hospital</span>
       </div>
       <nav className="sidebar-nav">
         <NavLink to="/" className="nav-links">

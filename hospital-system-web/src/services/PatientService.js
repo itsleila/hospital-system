@@ -30,7 +30,7 @@ export async function getPatientById(id) {
 
 export async function getPatientByCPF(cpf) {
   try {
-    const response = await fetch(ApiConfig(`patients/cpf/${cpf}`));
+    const response = await fetch(ApiConfig(`patients/cpf?cpf=${cpf}`));
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Failed to fetch patient');
