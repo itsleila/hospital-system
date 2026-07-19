@@ -1,8 +1,11 @@
 package br.edu.infnet.hospital_system.appointment.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import br.edu.infnet.hospital_system.appointment.model.RevisionResponseDTO;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,11 +60,11 @@ public class AppointmentController {
     return ResponseEntity.ok(appointments);
   }
 
-  @GetMapping("/date")
-  public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByDate(@RequestParam LocalDateTime date) {
-    List<AppointmentResponseDTO> appointments = appointmentService.getAppointmentsByDate(date);
-    return ResponseEntity.ok(appointments);
-  }
+    @GetMapping("/date/{date}")
+    public List<AppointmentResponseDTO> findAppointmentByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
+
+        return appointmentService.getAppointmentsByDate(date);
+    }
 
   @PutMapping("/{id}")
   public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable Long id,
@@ -69,5 +72,11 @@ public class AppointmentController {
     AppointmentResponseDTO updatedAppointment = appointmentService.updateAppointment(id, appointmentRequest);
     return ResponseEntity.ok(updatedAppointment);
   }
+
+    @GetMapping("/{id}/history")
+    public List<RevisionResponseDTO<AppointmentResponseDTO>>
+    getAppointmentHistory(@PathVariable Long id) {
+        return appointmentService.getAppointmentHistory(id);
+    }
 
 }

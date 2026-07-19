@@ -1,5 +1,6 @@
 package br.edu.infnet.hospital_system.patient.dto;
 
+import br.edu.infnet.hospital_system.patient.model.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,6 +19,6 @@ public class PatientResponseDTO {
     private String surname;
     private String cpf;
     private LocalDate birthdate;
-    private String gender;
+    private Gender gender;
     private String phonenumber;
 }
