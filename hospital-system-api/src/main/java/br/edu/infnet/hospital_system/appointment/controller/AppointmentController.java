@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import br.edu.infnet.hospital_system.appointment.dto.AppointmentUpdateRequestDTO;
 import br.edu.infnet.hospital_system.appointment.model.RevisionResponseDTO;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +16,6 @@ import br.edu.infnet.hospital_system.appointment.service.AppointmentService;
 
 @RestController
 @RequestMapping("/appointments")
-@CrossOrigin(origins = "http://localhost:5173")
 public class AppointmentController {
   private AppointmentService appointmentService;
 
@@ -40,6 +40,11 @@ public class AppointmentController {
   public ResponseEntity<Void> deleteAppointment(@PathVariable Long id) {
     appointmentService.deleteAppointment(id);
     return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/{id}/cancel")
+  public AppointmentResponseDTO cancelAppointment(@PathVariable Long id) {
+      return appointmentService.cancelAppointment(id);
   }
 
   @GetMapping("/{id}")
@@ -67,9 +72,8 @@ public class AppointmentController {
     }
 
   @PutMapping("/{id}")
-  public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable Long id,
-      @RequestBody AppointmentRequestDTO appointmentRequest) {
-    AppointmentResponseDTO updatedAppointment = appointmentService.updateAppointment(id, appointmentRequest);
+  public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable Long id, @RequestBody AppointmentUpdateRequestDTO appointmentUpdateDTO) {
+    AppointmentResponseDTO updatedAppointment = appointmentService.updateAppointment(id, appointmentUpdateDTO);
     return ResponseEntity.ok(updatedAppointment);
   }
 

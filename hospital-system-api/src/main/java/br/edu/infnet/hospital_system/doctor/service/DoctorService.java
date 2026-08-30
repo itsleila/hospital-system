@@ -4,6 +4,7 @@ import java.util.List;
 
 import br.edu.infnet.hospital_system.doctor.dto.DoctorResponseDTO;
 import br.edu.infnet.hospital_system.doctor.dto.DoctorResquestDTO;
+import br.edu.infnet.hospital_system.doctor.dto.DoctorUpdateRequestDTO;
 import br.edu.infnet.hospital_system.doctor.model.Doctor;
 import br.edu.infnet.hospital_system.doctor.repository.DoctorRepository;
 import org.springframework.http.HttpStatus;
@@ -94,20 +95,14 @@ public class DoctorService {
         return toDTO(doctor);
     }
 
-    public DoctorResponseDTO updateDoctorById(Long id, DoctorResquestDTO dto) {
+    public DoctorResponseDTO updateDoctorById(Long id, DoctorUpdateRequestDTO dto
+    ) {
 
         Doctor doctor = verifyDoctorById(id);
-
-        boolean crmChanged = !doctor.getCrm().equalsIgnoreCase(dto.getCRM());
-
-        if (crmChanged && doctorRepository.existsByCrmIgnoreCase(dto.getCRM())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "CRM already exists");
-        }
 
         doctor.setName(dto.getName());
         doctor.setSurname(dto.getSurname());
         doctor.setEmail(dto.getEmail());
-        doctor.setCrm(dto.getCRM());
         doctor.setSpecialty(dto.getSpecialty());
 
         Doctor updatedDoctor = doctorRepository.save(doctor);

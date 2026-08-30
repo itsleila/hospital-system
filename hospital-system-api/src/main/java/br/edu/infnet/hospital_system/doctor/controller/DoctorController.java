@@ -2,6 +2,7 @@ package br.edu.infnet.hospital_system.doctor.controller;
 
 import br.edu.infnet.hospital_system.doctor.dto.DoctorResponseDTO;
 import br.edu.infnet.hospital_system.doctor.dto.DoctorResquestDTO;
+import br.edu.infnet.hospital_system.doctor.dto.DoctorUpdateRequestDTO;
 import br.edu.infnet.hospital_system.doctor.model.Doctor;
 import br.edu.infnet.hospital_system.doctor.service.DoctorService;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/doctors")
-@CrossOrigin(origins = "http://localhost:5173")
 public class DoctorController {
     private DoctorService doctorService;
     public DoctorController (DoctorService doctorService) {
@@ -49,8 +49,8 @@ public class DoctorController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<DoctorResponseDTO> updateDoctor(@PathVariable Long id, @RequestBody DoctorResquestDTO doctorResquestDTO) {
-        DoctorResponseDTO doctor = doctorService.updateDoctorById(id, doctorResquestDTO);
+    public ResponseEntity<DoctorResponseDTO> updateDoctor(@PathVariable Long id, @RequestBody DoctorUpdateRequestDTO doctorUpdateDTO) {
+        DoctorResponseDTO doctor = doctorService.updateDoctorById(id, doctorUpdateDTO);
         return ResponseEntity.ok().body(doctor);
     }
 

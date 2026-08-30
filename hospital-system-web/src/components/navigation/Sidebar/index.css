@@ -60,3 +60,11 @@
 .sidebar-nav a.active {
   color: var(--primary);
 }
+
+.sidebar-footer{
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.7rem;
+}

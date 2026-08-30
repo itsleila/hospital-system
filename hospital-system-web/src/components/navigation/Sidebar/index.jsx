@@ -1,6 +1,11 @@
 import { NavLink } from 'react-router-dom';
 import Logo from '../../../assets/logo.svg';
-import { FaUsers, FaStethoscope, FaRegCalendarCheck } from 'react-icons/fa';
+import {
+  FaUsers,
+  FaStethoscope,
+  FaRegCalendarCheck,
+  FaRegBell,
+} from 'react-icons/fa';
 
 import './index.css';
 const Sidebar = () => {
@@ -25,7 +30,14 @@ const Sidebar = () => {
           <FaUsers />
           <span>Patients</span>
         </NavLink>
+        <NavLink to="/notifications" className="nav-links">
+          <FaRegBell />
+          <span>Notifications</span>
+        </NavLink>
       </nav>
+      <div className="sidebar-footer">
+        <p>&copy; 2026 Union Hospital. All rights reserved.</p>
+      </div>
     </aside>
   );
 };

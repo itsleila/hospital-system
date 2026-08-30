@@ -15,12 +15,19 @@ const AppointmentsEditModal = ({ isOpen, appointment, onClose, onSuccess }) => {
     reset,
     setError,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      doctorId: '',
+      dateTime: '',
+      status: '',
+      patientName: '',
+    },
+  });
 
   useEffect(() => {
     if (appointment) {
       reset({
-        doctorId: appointment.doctorId || '',
+        doctorId: appointment.doctorId ? String(appointment.doctorId) : '',
         dateTime: appointment.dateTime ? appointment.dateTime.slice(0, 16) : '',
         status: appointment.status || '',
         patientName: appointment.patientName || '',
@@ -77,10 +84,12 @@ const AppointmentsEditModal = ({ isOpen, appointment, onClose, onSuccess }) => {
             rules={{ required: 'Doctor is required' }}
             render={({ field }) => (
               <select {...field} className="select-input">
-                <option value="">Select doctor</option>
+                <option value="" disabled>
+                  Select doctor
+                </option>
 
                 {doctors.map((doctor) => (
-                  <option key={doctor.id} value={doctor.id}>
+                  <option key={doctor.id} value={String(doctor.id)}>
                     Dr. {doctor.name} - {doctor.specialty}
                   </option>
                 ))}

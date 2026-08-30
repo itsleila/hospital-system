@@ -6,11 +6,14 @@ import java.util.List;
 
 import br.edu.infnet.hospital_system.appointment.dto.AppointmentRequestDTO;
 import br.edu.infnet.hospital_system.appointment.dto.AppointmentResponseDTO;
+import br.edu.infnet.hospital_system.appointment.dto.AppointmentUpdateRequestDTO;
 import br.edu.infnet.hospital_system.appointment.model.Appointment;
 import br.edu.infnet.hospital_system.appointment.model.AppointmentStatus;
 import br.edu.infnet.hospital_system.appointment.model.RevisionResponseDTO;
 import br.edu.infnet.hospital_system.appointment.repository.AppointmentRepository;
 import br.edu.infnet.hospital_system.doctor.service.DoctorService;
+import br.edu.infnet.hospital_system.integration.notification.NotificationClient;
+import br.edu.infnet.hospital_system.integration.notification.dto.AppointmentNotificationRequest;
 import br.edu.infnet.hospital_system.patient.service.PatientService;
 import org.springframework.data.history.Revision;
 import org.springframework.http.HttpStatus;
@@ -25,12 +28,14 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PatientService patientService;
     private final DoctorService doctorService;
+    private final NotificationClient notificationClient;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, PatientService patientService, DoctorService doctorService) {
+    public AppointmentService(AppointmentRepository appointmentRepository, PatientService patientService, DoctorService doctorService, NotificationClient notificationClient) {
 
         this.appointmentRepository = appointmentRepository;
         this.patientService = patientService;
         this.doctorService = doctorService;
+        this.notificationClient = notificationClient;
     }
 
     private Appointment toEntity(AppointmentRequestDTO appointmentRequestDTO) {
@@ -52,10 +57,24 @@ public class AppointmentService {
         dto.setId(appointment.getId());
         dto.setPatientName(appointment.getPatient().getName() + " " + appointment.getPatient().getSurname());
         dto.setDoctorName(appointment.getDoctor().getName() + " " + appointment.getDoctor().getSurname());
+        dto.setDoctorId(appointment.getDoctor().getId());
         dto.setStatus(appointment.getStatus());
         dto.setDateTime(appointment.getDateTime());
 
         return dto;
+    }
+
+    private AppointmentNotificationRequest createNotificationRequest(Appointment appointment, String type) {
+        return new AppointmentNotificationRequest(
+            appointment.getId(),
+            appointment.getPatient().getId(),
+            appointment.getPatient().getName() + " " + appointment.getPatient().getSurname(),
+            appointment.getPatient().getPhonenumber(),
+            appointment.getDoctor().getName() + " " + appointment.getDoctor().getSurname(),
+            appointment.getDateTime(),
+            appointment.getStatus(),
+            type
+        );
     }
 
     @Transactional(readOnly = true)
@@ -65,7 +84,6 @@ public class AppointmentService {
 
     @Transactional(readOnly = true)
     public boolean verifyDoctorAvailability(Long doctorId, LocalDateTime dateTime) {
-
         return appointmentRepository.existsByDoctor_IdAndDateTime(doctorId, dateTime);
     }
 
@@ -79,6 +97,7 @@ public class AppointmentService {
 
         Appointment appointment = toEntity(appointmentRequest);
         Appointment savedAppointment = appointmentRepository.save(appointment);
+        notificationClient.createNotification(createNotificationRequest(savedAppointment, "APPOINTMENT_CREATED"));
 
         return toDTO(savedAppointment);
     }
@@ -102,8 +121,7 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentResponseDTO>
-    getAppointmentsByPatientId(Long patientId) {
+    public List<AppointmentResponseDTO> getAppointmentsByPatientId(Long patientId) {
 
         return appointmentRepository.findByPatient_Id(patientId)
                 .stream()
@@ -112,8 +130,7 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentResponseDTO>
-    getAppointmentsByPatientCPF(String patientCPF) {
+    public List<AppointmentResponseDTO> getAppointmentsByPatientCPF(String patientCPF) {
 
         return appointmentRepository.findByPatient_Cpf(patientCPF)
                 .stream()
@@ -122,9 +139,7 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentResponseDTO>
-    getAppointmentsByDoctorId(Long doctorId) {
-
+    public List<AppointmentResponseDTO> getAppointmentsByDoctorId(Long doctorId) {
         return appointmentRepository.findByDoctor_Id(doctorId)
                 .stream()
                 .map(this::toDTO)
@@ -132,8 +147,7 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<AppointmentResponseDTO>
-    getAppointmentsByDate(LocalDate date) {
+    public List<AppointmentResponseDTO> getAppointmentsByDate(LocalDate date) {
 
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.plusDays(1).atStartOfDay();
@@ -145,24 +159,33 @@ public class AppointmentService {
                 .toList();
     }
 
-    public AppointmentResponseDTO updateAppointment(Long id, AppointmentRequestDTO appointmentRequest) {
+    public AppointmentResponseDTO updateAppointment(Long id, AppointmentUpdateRequestDTO appointmentUpdateDTO) {
         Appointment existingAppointment = verifyAppointmentById(id);
-
-        boolean doctorUnavailable = appointmentRepository.existsByDoctor_IdAndDateTimeAndIdNot(appointmentRequest.getDoctorId(), appointmentRequest.getDateTime(), id);
+        boolean doctorUnavailable = appointmentRepository.existsByDoctor_IdAndDateTimeAndIdNot(appointmentUpdateDTO.getDoctorId(), appointmentUpdateDTO.getDateTime(), id);
 
         if (doctorUnavailable) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Doctor is not available at the requested time");
         }
 
-        existingAppointment.setPatient(patientService.verifyPatientById(appointmentRequest.getPatientId()));
-
-        existingAppointment.setDoctor(doctorService.verifyDoctorById(appointmentRequest.getDoctorId()));
-
-        existingAppointment.setDateTime(appointmentRequest.getDateTime());
+        existingAppointment.setDoctor(doctorService.verifyDoctorById(appointmentUpdateDTO.getDoctorId()));
+        existingAppointment.setDateTime(appointmentUpdateDTO.getDateTime());
+        existingAppointment.setStatus(appointmentUpdateDTO.getStatus());
 
         Appointment updatedAppointment = appointmentRepository.save(existingAppointment);
+        notificationClient.createNotification(createNotificationRequest(updatedAppointment, "APPOINTMENT_UPDATED"));
+
 
         return toDTO(updatedAppointment);
+    }
+
+    public AppointmentResponseDTO cancelAppointment(Long id) {
+        Appointment appointment = verifyAppointmentById(id);
+
+        appointment.setStatus(AppointmentStatus.CANCELED);
+        Appointment cancelledAppointment = appointmentRepository.save(appointment);
+
+        notificationClient.createNotification(createNotificationRequest(cancelledAppointment, "APPOINTMENT_CANCELLED"));
+        return toDTO(cancelledAppointment);
     }
 
     private RevisionResponseDTO<AppointmentResponseDTO> toHistoryDTO(Revision<Integer, Appointment> revision) {

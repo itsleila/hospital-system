@@ -6,6 +6,7 @@ import Patients from './pages/Patients/Patients.jsx';
 import PatientForm from './pages/Patients/PatientForm.jsx';
 import DoctorForm from './pages/Doctors/DoctorForm.jsx';
 import AppointmentForm from './pages/Appointments/AppointmentForm.jsx';
+import Notifications from './pages/Notification/Notifications.jsx';
 export const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -42,6 +43,15 @@ export const router = createBrowserRouter([
             element: <Patients />,
           },
           { path: 'patient-form', element: <PatientForm /> },
+        ],
+      },
+      {
+        path: '/notifications',
+        children: [
+          {
+            index: true,
+            element: <Notifications />,
+          },
         ],
       },
     ],

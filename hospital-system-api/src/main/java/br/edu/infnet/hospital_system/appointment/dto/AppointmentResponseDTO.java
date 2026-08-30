@@ -16,7 +16,7 @@ public class AppointmentResponseDTO {
     private Long id;
     private LocalDateTime dateTime;
     private AppointmentStatus status;
-
+    private Long doctorId;
     private String doctorName;
     private String patientName;
 }

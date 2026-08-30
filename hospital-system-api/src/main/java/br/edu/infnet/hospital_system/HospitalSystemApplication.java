@@ -2,12 +2,14 @@ package br.edu.infnet.hospital_system;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.data.envers.repository.config.EnableEnversRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
 @EnableJpaAuditing
 @EnableEnversRepositories
+@EnableFeignClients
 public class HospitalSystemApplication {
 
     public static void main(String[] args) {

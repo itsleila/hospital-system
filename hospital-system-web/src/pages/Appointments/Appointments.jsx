@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Modal, SearchArea, Table } from '../../components';
 import '../pages.css';
 import {
-  deleteAppointment,
+  cancelAppointment,
   getAllAppointments,
 } from '../../services/AppointmentService';
 import { useEffect, useState } from 'react';
@@ -64,14 +64,14 @@ const Appointments = () => {
     setIsEditModalOpen(true);
   }
 
-  function handleConfirmDelete(appointment) {
+  function handleConfirmCancel(appointment) {
     setSelectedAppointment(appointment);
     setOpenModalConfirmation(true);
   }
 
-  const handleDeleteAppointment = async () => {
+  const handleCancelAppointment = async () => {
     try {
-      await deleteAppointment(selectedAppointment.id);
+      await cancelAppointment(selectedAppointment.id);
 
       setAppointments(
         appointments.filter((a) => a.id !== selectedAppointment.id),
@@ -79,7 +79,7 @@ const Appointments = () => {
 
       setOpenModalConfirmation(false);
     } catch (error) {
-      console.error('Error deleting appointment:', error);
+      console.error('Error cancelling appointment:', error);
     }
   };
 
@@ -120,7 +120,7 @@ const Appointments = () => {
               : filteredAppointments
           }
           onEdit={handleEdit}
-          onDelete={handleConfirmDelete}
+          onCancel={handleConfirmCancel}
           noDataComponent={
             <div className="empty-state">No appointments found</div>
           }
@@ -130,17 +130,17 @@ const Appointments = () => {
       <Modal
         isOpen={openModalConfirmation}
         onClose={() => setOpenModalConfirmation(false)}
-        title="Confirm Delete"
+        title="Confirm Cancel"
       >
-        <p>Are you sure you want to delete this appointment?</p>
+        <p>Are you sure you want cancel this appointment?</p>
 
         <button
           onClick={() => {
-            handleDeleteAppointment();
+            handleCancelAppointment();
           }}
           className="btn-danger"
         >
-          Delete
+          Cancel Appointment
         </button>
       </Modal>
 

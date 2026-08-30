@@ -21,7 +21,6 @@ const DoctorEditModal = ({ isOpen, doctor, onClose, onSuccess }) => {
         name: doctor.name || '',
         surname: doctor.surname || '',
         email: doctor.email || '',
-        crm: doctor.crm || '',
         specialty: doctor.specialty || '',
       });
     }
