@@ -1,12 +1,15 @@
 package br.edu.infnet.hospital_system.appointment.service;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import br.edu.infnet.hospital_system.appointment.dto.AppointmentRequestDTO;
 import br.edu.infnet.hospital_system.appointment.dto.AppointmentResponseDTO;
 import br.edu.infnet.hospital_system.appointment.dto.AppointmentUpdateRequestDTO;
+import br.edu.infnet.hospital_system.appointment.event.AppointmentEvent;
 import br.edu.infnet.hospital_system.appointment.model.Appointment;
 import br.edu.infnet.hospital_system.appointment.model.AppointmentStatus;
 import br.edu.infnet.hospital_system.appointment.model.RevisionResponseDTO;
@@ -15,11 +18,13 @@ import br.edu.infnet.hospital_system.doctor.service.DoctorService;
 import br.edu.infnet.hospital_system.integration.notification.NotificationClient;
 import br.edu.infnet.hospital_system.integration.notification.dto.AppointmentNotificationRequest;
 import br.edu.infnet.hospital_system.patient.service.PatientService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.history.Revision;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
+
 
 @Service
 @Transactional
@@ -28,14 +33,13 @@ public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final PatientService patientService;
     private final DoctorService doctorService;
-    private final NotificationClient notificationClient;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, PatientService patientService, DoctorService doctorService, NotificationClient notificationClient) {
-
+    public AppointmentService(AppointmentRepository appointmentRepository, PatientService patientService, DoctorService doctorService, ApplicationEventPublisher eventPublisher) {
         this.appointmentRepository = appointmentRepository;
         this.patientService = patientService;
         this.doctorService = doctorService;
-        this.notificationClient = notificationClient;
+        this.eventPublisher = eventPublisher;
     }
 
     private Appointment toEntity(AppointmentRequestDTO appointmentRequestDTO) {
@@ -87,6 +91,17 @@ public class AppointmentService {
         return appointmentRepository.existsByDoctor_IdAndDateTime(doctorId, dateTime);
     }
 
+    private void publishAppointmentEvent(Appointment appointment, String type) {
+
+        AppointmentEvent event = new AppointmentEvent(UUID.randomUUID(), appointment.getId(), appointment.getPatient().getId(),
+                appointment.getPatient().getName() + " " + appointment.getPatient().getSurname(),
+                appointment.getPatient().getPhonenumber(),
+                appointment.getDoctor().getName() + " " + appointment.getDoctor().getSurname(),
+                appointment.getDateTime(), type, Instant.now());
+        eventPublisher.publishEvent(event);
+    }
+
+
     public AppointmentResponseDTO createAppointment(AppointmentRequestDTO appointmentRequest) {
 
         boolean doctorUnavailable = appointmentRepository.existsByDoctor_IdAndDateTime(appointmentRequest.getDoctorId(), appointmentRequest.getDateTime());
@@ -97,8 +112,8 @@ public class AppointmentService {
 
         Appointment appointment = toEntity(appointmentRequest);
         Appointment savedAppointment = appointmentRepository.save(appointment);
-        notificationClient.createNotification(createNotificationRequest(savedAppointment, "APPOINTMENT_CREATED"));
 
+        publishAppointmentEvent(savedAppointment, "APPOINTMENT_CREATED");
         return toDTO(savedAppointment);
     }
 
@@ -172,9 +187,7 @@ public class AppointmentService {
         existingAppointment.setStatus(appointmentUpdateDTO.getStatus());
 
         Appointment updatedAppointment = appointmentRepository.save(existingAppointment);
-        notificationClient.createNotification(createNotificationRequest(updatedAppointment, "APPOINTMENT_UPDATED"));
-
-
+        publishAppointmentEvent(updatedAppointment, "APPOINTMENT_UPDATED");
         return toDTO(updatedAppointment);
     }
 
@@ -184,7 +197,7 @@ public class AppointmentService {
         appointment.setStatus(AppointmentStatus.CANCELED);
         Appointment cancelledAppointment = appointmentRepository.save(appointment);
 
-        notificationClient.createNotification(createNotificationRequest(cancelledAppointment, "APPOINTMENT_CANCELLED"));
+        publishAppointmentEvent(cancelledAppointment, "APPOINTMENT_CANCELLED");
         return toDTO(cancelledAppointment);
     }
 

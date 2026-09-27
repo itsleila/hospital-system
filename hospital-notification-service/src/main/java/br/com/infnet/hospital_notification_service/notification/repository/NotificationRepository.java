@@ -6,10 +6,18 @@ import br.com.infnet.hospital_notification_service.notification.model.Notificati
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     List<Notification> findByAppointmentId(Long appointmentId);
+
     List<Notification> findByType(NotificationType type);
+
+    boolean existsByEventId(UUID eventId);
+
+    Optional<Notification> findByEventId(UUID eventId);
+
     List<Notification> findByStatus(NotificationStatus status);
 }

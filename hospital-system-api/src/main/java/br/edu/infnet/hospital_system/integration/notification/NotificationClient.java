@@ -10,9 +10,6 @@ import java.util.List;
 @FeignClient(name = "hospital-notification-service")
 public interface NotificationClient {
 
-    @PostMapping("/notifications")
-    void createNotification(@RequestBody AppointmentNotificationRequest request);
-
     @GetMapping("/notifications")
     List<NotificationResponseDTO> findAll();
 

@@ -1,5 +1,6 @@
 package br.com.infnet.hospital_notification_service.notification.service;
 
+import br.com.infnet.hospital_notification_service.event.AppointmentEvent;
 import br.com.infnet.hospital_notification_service.notification.dto.AppointmentNotificationRequest;
 import br.com.infnet.hospital_notification_service.notification.dto.NotificationResponseDTO;
 import br.com.infnet.hospital_notification_service.notification.model.Notification;
@@ -10,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -69,11 +69,32 @@ public class NotificationService {
     }
 
 
-    public NotificationResponseDTO create(AppointmentNotificationRequest request) {
-        Notification notification = toEntity(request);
+    @Transactional
+    public NotificationResponseDTO createFromEvent(AppointmentEvent event) {
+        if (notificationRepository.existsByEventId(event.eventId())
+        ) {
+            return notificationRepository.findByEventId(event.eventId()).map(this::toDTO).orElseThrow();
+        }
 
-        Notification savedNotification = notificationRepository.save(notification);
-        return toDTO(savedNotification);
+        Notification notification = new Notification();
+        notification.setEventId(event.eventId());
+        notification.setAppointmentId(event.appointmentId());
+
+        notification.setPatientId(event.patientId());
+        notification.setPatientName(event.patientName());
+
+        notification.setPatientPhone(event.patientPhone());
+        notification.setDoctorName(event.doctorName());
+
+        notification.setAppointmentDateTime(event.appointmentDateTime());
+        notification.setType(NotificationType.valueOf(event.eventType()));
+
+        notification.setStatus(NotificationStatus.PENDING);
+        notification.setCreatedAt(LocalDateTime.now());
+
+        Notification saved = notificationRepository.save(notification);
+
+        return toDTO(saved);
     }
 
 

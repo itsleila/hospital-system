@@ -21,13 +21,6 @@ public class NotificationController {
         this.notificationService = notificationService;
     }
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public NotificationResponseDTO create(@RequestBody AppointmentNotificationRequest request) {
-
-        return notificationService.create(request);
-    }
-
     @GetMapping
     public List<NotificationResponseDTO> findAll() {
 
