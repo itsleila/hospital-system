@@ -26,10 +26,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.server.ResponseStatusException;
+import org.junit.jupiter.api.DisplayName;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 class NotificationServiceTest {
 
     @Mock
@@ -38,7 +41,8 @@ class NotificationServiceTest {
     private NotificationService notificationService;
 
     @Test
-    void shouldCreateNotificationFromAppointmentEvent() {
+    @DisplayName("Deve criar uma notificação a partir de um evento de agendamento")
+    void deveCriarUmaNotificacao() {
 
         AppointmentEvent event = createEvent("APPOINTMENT_CREATED");
 
@@ -72,7 +76,8 @@ class NotificationServiceTest {
     }
 
     @Test
-    void shouldSaveCorrectDataFromEvent() {
+    @DisplayName("Deve salvar os dados corretos da notificação a partir do evento")
+    void deveSalvarOsDadosCorretamente() {
 
         AppointmentEvent event = createEvent("APPOINTMENT_UPDATED");
 
@@ -103,10 +108,9 @@ class NotificationServiceTest {
         assertThat(saved.getCreatedAt()).isNotNull();
     }
 
-
-
     @Test
-    void shouldFindNotificationById() {
+    @DisplayName("Deve encontrar uma notificação por ID")
+    void deveEncontrarUmaNotificacaoPeloID() {
 
         Notification notification = createNotification(NotificationStatus.PENDING);
         when(notificationRepository.findById(1L)).thenReturn(Optional.of(notification));
@@ -121,9 +125,9 @@ class NotificationServiceTest {
         verify(notificationRepository).findById(1L);
     }
 
-
     @Test
-    void shouldFindNotificationsByStatus() {
+    @DisplayName("Deve encontrar notificações por status")
+    void deveEncontrarNotificacoesPorStatus() {
 
         Notification notification = createNotification(NotificationStatus.FAILED);
         when(notificationRepository.findByStatus(NotificationStatus.FAILED)).thenReturn(List.of(notification));
@@ -136,10 +140,9 @@ class NotificationServiceTest {
         verify(notificationRepository).findByStatus(NotificationStatus.FAILED);
     }
 
-
-
     @Test
-    void shouldCancelPendingNotification() {
+    @DisplayName("Deve cancelar uma notificação pendente")
+    void deveCancelarUmaNotificacao() {
 
         Notification notification = createNotification(NotificationStatus.PENDING);
 
@@ -153,7 +156,8 @@ class NotificationServiceTest {
     }
 
     @Test
-    void shouldRejectCancellationWhenNotificationIsSent() {
+    @DisplayName("Deve rejeitar o cancelamento quando a notificação já foi enviada")
+    void naoDeveCancelarUmaNotificacaoJaEnviada() {
         Notification notification = createNotification(NotificationStatus.SENT);
 
         when(notificationRepository.findById(1L)).thenReturn(Optional.of(notification));
@@ -168,41 +172,31 @@ class NotificationServiceTest {
     }
 
     @Test
-    void shouldRejectCancellationWhenAlreadyCancelled() {
+    @DisplayName("Deve rejeitar o cancelamento quando a notificação já está cancelada")
+    void naoDeveCancelarUmaNotificacaoJaCancelada() {
 
-        Notification notification =
-                createNotification(
-                        NotificationStatus.CANCELLED
-                );
+        Notification notification = createNotification(
+                NotificationStatus.CANCELLED);
 
         when(notificationRepository.findById(1L))
                 .thenReturn(
-                        Optional.of(notification)
-                );
+                        Optional.of(notification));
 
-        assertThatThrownBy(() ->
-                notificationService.cancel(1L)
-        )
+        assertThatThrownBy(() -> notificationService.cancel(1L))
                 .isInstanceOf(
-                        ResponseStatusException.class
-                )
+                        ResponseStatusException.class)
                 .satisfies(exception -> {
 
-                    ResponseStatusException responseException =
-                            (ResponseStatusException) exception;
+                    ResponseStatusException responseException = (ResponseStatusException) exception;
 
                     assertThat(
-                            responseException.getStatusCode()
-                    ).isEqualTo(HttpStatus.CONFLICT);
+                            responseException.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
                 });
 
         verify(
                 notificationRepository,
-                never()
-        ).save(any());
+                never()).save(any());
     }
-
-
 
     private AppointmentEvent createEvent(String eventType) {
 
@@ -216,8 +210,7 @@ class NotificationServiceTest {
 
                 LocalDateTime.of(2026, 10, 20, 14, 0),
                 eventType,
-                Instant.parse("2026-09-27T15:00:00Z")
-        );
+                Instant.parse("2026-09-27T15:00:00Z"));
     }
 
     private Notification createNotification(NotificationStatus status) {
