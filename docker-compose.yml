@@ -1,0 +1,122 @@
+services:
+
+  frontend:
+    build:
+      context: ./hospital-system-web
+
+    ports:
+      - "5173:80"
+
+    depends_on:
+      - api-gateway
+
+
+  api-gateway:
+    build:
+      context: ./api-gateway
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      EUREKA_URL: http://discovery-server:8888/eureka/
+
+    depends_on:
+      - discovery-server
+
+
+  discovery-server:
+    build:
+      context: ./discovery-server
+
+    ports:
+      - "8888:8888"
+
+
+  hospital-system-api:
+    build:
+      context: ./hospital-system-api
+
+    environment:
+      DB_URL: jdbc:postgresql://hospital-db:5432/hospitaldb
+      DB_USERNAME: hospital
+      DB_PASSWORD: hospital123
+
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+
+      EUREKA_URL: http://discovery-server:8888/eureka/
+
+    depends_on:
+      - hospital-db
+      - rabbitmq
+      - discovery-server
+
+
+  hospital-notification-service:
+    build:
+      context: ./hospital-notification-service
+
+    environment:
+      DB_URL: jdbc:postgresql://notification-db:5432/notificationdb
+      DB_USERNAME: notification
+      DB_PASSWORD: notification123
+
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USER: hospital
+      RABBITMQ_PASSWORD: hospital123
+
+      EUREKA_URL: http://discovery-server:8888/eureka/
+
+    depends_on:
+      - notification-db
+      - rabbitmq
+      - discovery-server
+
+
+  rabbitmq:
+    image: rabbitmq:4-management
+
+    environment:
+      RABBITMQ_DEFAULT_USER: hospital
+      RABBITMQ_DEFAULT_PASS: hospital123
+
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
+  hospital-db:
+    image: postgres:17
+
+    environment:
+      POSTGRES_DB: hospitaldb
+      POSTGRES_USER: hospital
+      POSTGRES_PASSWORD: hospital123
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - hospital-data:/var/lib/postgresql/data
+
+
+  notification-db:
+    image: postgres:17
+
+    environment:
+      POSTGRES_DB: notificationdb
+      POSTGRES_USER: notification
+      POSTGRES_PASSWORD: notification123
+
+    ports:
+      - "5434:5432"
+
+    volumes:
+      - notification-data:/var/lib/postgresql/data
+
+
+volumes:
+  hospital-data:
+  notification-data:

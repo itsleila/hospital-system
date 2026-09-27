@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: hospital-config
+  namespace: hospital
+
+data:
+  EUREKA_URL: "http://discovery-server:8888/eureka/"
+
+  RABBITMQ_HOST: "rabbitmq"
+  RABBITMQ_PORT: "5672"
+
+  HOSPITAL_DB_URL: "jdbc:postgresql://hospital-db:5432/hospitaldb"
+
+  NOTIFICATION_DB_URL: "jdbc:postgresql://notification-db:5432/notificationdb"

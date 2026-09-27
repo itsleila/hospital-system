@@ -1,4 +1,4 @@
-export function ApiConfig(endpoint) {
-  const API_URL = `http://localhost:8080/${endpoint}`;
-  return API_URL;
-}
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+export const ApiConfig = (endpoint) =>
+    `${API_URL}/${endpoint}`;
