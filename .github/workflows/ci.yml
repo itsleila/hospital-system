@@ -27,7 +27,7 @@ jobs:
           - hospital-system-api
           - hospital-notification-service
           - api-gateway
-          - discovery-server
+          - hospital-server
 
     steps:
 
