@@ -50,7 +50,18 @@ const AppointmentsEditModal = ({ isOpen, appointment, onClose, onSuccess }) => {
   const onSubmit = async (data) => {
     try {
       setIsSubmitting(true);
-      await updateAppointment(appointment.id, data);
+
+      const appointmentData = {
+        patientId: appointment.patientId,
+        doctorId: Number(data.doctorId),
+        dateTime: data.dateTime,
+        status: data.status,
+      };
+
+      console.log('Updating appointment:', appointmentData);
+
+      await updateAppointment(appointment.id, appointmentData);
+
       onSuccess();
       onClose();
     } catch (error) {

@@ -1,5 +1,27 @@
 import { ApiConfig } from '../config/api';
 
+async function getErrorMessage(response, fallback) {
+  let body;
+
+  try {
+    body = await response.json();
+  } catch {
+    return `${fallback} (${response.status})`;
+  }
+
+  console.error('Backend error:', {
+    status: response.status,
+    body,
+  });
+
+  return (
+    body.message ||
+    body.error ||
+    body.detail ||
+    `${fallback} (${response.status})`
+  );
+}
+
 export async function getAllDoctors() {
   try {
     const response = await fetch(ApiConfig('doctors'));
@@ -44,6 +66,8 @@ export async function getDoctorByCRM(crm) {
 
 export async function createDoctor(doctorData) {
   try {
+    console.log('Creating doctor:', doctorData);
+
     const response = await fetch(ApiConfig('doctors'), {
       method: 'POST',
       headers: {
@@ -51,10 +75,13 @@ export async function createDoctor(doctorData) {
       },
       body: JSON.stringify(doctorData),
     });
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to create doctor');
+      throw new Error(
+        await getErrorMessage(response, 'Failed to create doctor'),
+      );
     }
+
     return await response.json();
   } catch (error) {
     console.error('Error creating doctor:', error);
@@ -87,9 +114,11 @@ export async function deleteDoctor(id) {
     const response = await fetch(ApiConfig(`doctors/${id}`), {
       method: 'DELETE',
     });
+
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to delete doctor');
+      throw new Error(
+        await getErrorMessage(response, 'Failed to delete doctor'),
+      );
     }
   } catch (error) {
     console.error('Error deleting doctor:', error);
